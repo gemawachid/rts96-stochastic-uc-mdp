@@ -1,0 +1,87 @@
+========================================================================
+  Reliability-Constrained Stochastic UC with MDP Dispatch
+  IEEE RTS-96 (24-bus) | 32 generators | 3405 MW installed
+  Annual peak = 2850 MW | VRE = 40%
+  Solver: HiGHS (highspy) | LOLP target epsilon = 0.08
+========================================================================
+
+  Generator fleet summary:
+    U100: 3 x 100 MW = 300 MW
+    U12: 5 x 12 MW = 60 MW
+    U155: 4 x 155 MW = 620 MW
+    U197: 3 x 197 MW = 591 MW
+    U20: 4 x 20 MW = 80 MW
+    U350: 1 x 350 MW = 350 MW
+    U400: 2 x 400 MW = 800 MW
+    U50: 6 x 50 MW = 300 MW
+    U76: 4 x 76 MW = 304 MW
+    Total: 3405 MW | Reserve vs peak: 19.5%
+
+[1/7] Generating VRE scenarios...
+      K=30 | Mean VRE=877 MW | Std=451 MW
+
+[2/7] Net-load Markov chain...
+      |S| = 10 x 10 x 24 = 2400
+
+[3/7] Stage 1: Stochastic UC MIP (HiGHS)...
+      Status:          HighsModelStatus.kOptimal
+      Objective:       USD 582,663
+      MIP LOLP:        0.00000
+      LOLP satisfied:  True
+      Committed g-hrs: 616 / 768 max
+      Variables:       29,664
+      Constraints:     102,126
+
+[4/7] Stage 2: MDP value iteration...
+  Running value iteration...
+  Done. V[t=0] in [-14298074, -447828]
+
+[5/7] Monte Carlo reliability (5000 samples)...
+
+[6/7] pandapower power flow (hour 17, winter weekday)...
+  Loaded IEEE RTS-24 bus from pandapower (case24_ieee_rts).
+      Converged: True  Max line loading: 78.1%
+
+========================================================================
+  RESULTS
+========================================================================
+  Method                                           LOLP   EENS(MWh)    EUE(pu)  OK
+  --------------------------------------------- ------- ----------- ---------- ---
+  Proposed - Stoch.UC MIP + MDP                  0.0174       54.82   0.000955   Y
+  Baseline A - Det.UC + MDP                      0.0309      128.38   0.002238   Y
+  Baseline B - Stoch.UC + Merit disp.            0.0134       42.01   0.000732   Y
+
+  epsilon = 0.08 | Annual peak = 2850 MW | Fleet = 3405 MW
+
+[7/7] Penetration sweep 20%-60%...
+
+  -- VRE = 20% --
+    Proposed LOLP=0.0361  Det LOLP=0.0571
+
+  -- VRE = 30% --
+    Proposed LOLP=0.0171  Det LOLP=0.0314
+
+  -- VRE = 40% --
+    Proposed LOLP=0.0131  Det LOLP=0.0247
+
+  -- VRE = 50% --
+    Proposed LOLP=0.0058  Det LOLP=0.0218
+
+  -- VRE = 60% --
+    Proposed LOLP=0.0093  Det LOLP=0.0207
+  VRE_%  LOLP_proposed  EENS_proposed_MWh  LOLP_det  EENS_det_MWh  UC_obj_USD  UC_lolp_mip
+20.0000         0.0361           121.5213    0.0571      228.8550 703873.7166       0.0000
+30.0000         0.0171            45.5164    0.0314      109.9978 641383.4007       0.0000
+40.0000         0.0131            39.0413    0.0247       79.6906 582663.0581       0.0000
+50.0000         0.0058            11.1037    0.0218       68.4894 538016.4403       0.0000
+60.0000         0.0093            25.5979    0.0207       76.2818 495306.6797       0.0000
+
+========================================================================
+  Done.
+========================================================================
+SIMULATION_DONE
+Building case artifacts for operation and MDP figures...
+  UC status=HighsModelStatus.kOptimal, objective=582,663, committed_hours=616
+Writing figures to D:\Personal OneDrive\OneDrive\Research\New R\outputs\figures
+Done.
+FIGURES_DONE
