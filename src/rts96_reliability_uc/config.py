@@ -1,9 +1,6 @@
 """Configuration constants for the RTS-96 reliability study."""
 
-import numpy as np
-
 RNG_SEED = 42
-np.random.seed(RNG_SEED)
 
 # Storage (augmented; not in original RTS-96)
 STORAGE_CAP_MWH = 1000.0

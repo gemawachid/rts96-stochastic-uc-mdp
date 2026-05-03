@@ -11,6 +11,7 @@ def monte_carlo_reliability(mdp, generators, commitment, vre_scenarios,
     G   = len(generators); K = len(vre_scenarios)
     for_rates = np.array([g.for_rate for g in generators])
     lol_events = 0; total_unsrv = 0.0; periods_lol = 0
+    eens_sq = 0.0  # sum of squares for EENS variance
 
     for _ in range(n_samples):
         vre   = vre_scenarios[rng.integers(0,K)]
@@ -29,15 +30,28 @@ def monte_carlo_reliability(mdp, generators, commitment, vre_scenarios,
 
         if day_lol: lol_events += 1
         total_unsrv += day_unsrv
+        eens_sq    += day_unsrv ** 2
 
-    lolp = periods_lol/(n_samples*T)
-    daily_lolp = lol_events/n_samples
-    eens = total_unsrv/n_samples
-    return {"LOLP":lolp,"EENS_MWh":eens,"EUE_pu":eens/DEMAND.sum(),
-            "daily_LOLP":daily_lolp,
-            "lol_events":lol_events,"n_samples":n_samples,
-            "periods_with_LOL":periods_lol,"lolp_satisfied":lolp<=LOLP_EPS}
+    lolp       = periods_lol / (n_samples * T)
+    daily_lolp = lol_events  / n_samples
+    eens       = total_unsrv / n_samples
 
+    # 95 % confidence intervals (normal approximation)
+    z = 1.96
+    lolp_se  = np.sqrt(lolp * (1 - lolp) / (n_samples * T))
+    eens_var = (eens_sq / n_samples) - eens ** 2   # E[X²] - E[X]²
+    eens_se  = np.sqrt(max(eens_var, 0.0) / n_samples)
 
-# ══════════════════════════════════════════════════════════════════════════════
-#  6. BASELINES
+    return {
+        "LOLP":              lolp,
+        "LOLP_CI95":         (round(lolp - z*lolp_se, 6), round(lolp + z*lolp_se, 6)),
+        "EENS_MWh":          eens,
+        "EENS_CI95":         (round(eens - z*eens_se, 3), round(eens + z*eens_se, 3)),
+        "EUE_pu":            eens / DEMAND.sum(),
+        "daily_LOLP":        daily_lolp,
+        "lol_events":        lol_events,
+        "n_samples":         n_samples,
+        "periods_with_LOL":  periods_lol,
+        "lolp_satisfied":    lolp <= LOLP_EPS,
+    }
+

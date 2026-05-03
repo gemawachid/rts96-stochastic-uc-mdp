@@ -1,5 +1,5 @@
-highspy
-matplotlib
-numpy
-pandas
-pandapower
+highspy>=1.7,<2
+numpy>=1.24,<2
+pandas>=2.0
+matplotlib>=3.7
+pandapower>=2.13

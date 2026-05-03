@@ -90,6 +90,3 @@ class MDPDispatch:
         cost, unserved = self._eco_dispatch(t, net_load_mw+b, avail)
         return b, unserved, cost
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  5. MONTE CARLO RELIABILITY (LOLP, EENS, EUE)

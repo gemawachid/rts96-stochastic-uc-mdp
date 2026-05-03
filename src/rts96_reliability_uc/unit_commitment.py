@@ -58,6 +58,9 @@ def solve_stochastic_uc_highs(generators, scenarios, probs,
             obj[iu(g,t)] = gen.cost_a
             obj[iv(g,t)] = gen.su_cost
             obj[iw(g,t)] = gen.sd_cost
+    # Stage 2 dispatch cost uses only the linear term c_b (MILP requires linear
+    # objectives). The quadratic term c_c is included in the MDP economic dispatch
+    # (mdp.py:_eco_dispatch) for accurate cost evaluation at execution time.
     for k in range(K):
         pi = probs[k]
         for g in range(G):
@@ -193,6 +196,3 @@ def solve_stochastic_uc_highs(generators, scenarios, probs,
         "solver_status":   solver_status,
     }
 
-
-# ══════════════════════════════════════════════════════════════════════════════
-#  4. MDP — VALUE ITERATION
